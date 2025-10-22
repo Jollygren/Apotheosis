@@ -2,6 +2,8 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -11,13 +13,13 @@ public class PlayerController : MonoBehaviour
     private bool _isJumping = false;
     private InputAction _moveAction;
     private InputAction _jumpAction;
-    private CircleCollider2D _collider;
+    private Collider2D _collider;
     private Rigidbody2D _rigidbody;
     void Start()
     {
         _moveAction = InputSystem.actions.FindAction("Move");
         _jumpAction = InputSystem.actions.FindAction("Jump");
-        _collider = GetComponent<CircleCollider2D>();
+        _collider = GetComponent<Collider2D>();
         _rigidbody = GetComponent<Rigidbody2D>();
 
     }
@@ -34,11 +36,21 @@ public class PlayerController : MonoBehaviour
                 _isJumping = true;
             }
         }
+
+        if(transform.position.y < -10f)
+        {
+            transform.position = Vector3.zero;
+        }
         
         _rigidbody.AddForce(inputVector, ForceMode2D.Impulse);
         if(_collider.IsTouchingLayers(LayerMask.GetMask("Ground")))
         {
             _isJumping = false; // Reset jumping state when on the ground
+        }
+
+        if(_collider.IsTouchingLayers(LayerMask.GetMask("Exit")))
+        {
+            SceneManager.LoadScene("SampleScene");
         }
     }
 }
